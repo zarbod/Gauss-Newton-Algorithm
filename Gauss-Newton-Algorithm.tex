@@ -1,0 +1,327 @@
+\documentclass[12pt]{article}
+
+\usepackage{mathtools}
+
+\usepackage{amsfonts}
+
+\usepackage{amssymb}
+
+\usepackage{geometry}
+
+\usepackage{graphicx}
+
+\usepackage{float}
+
+\usepackage{tikz}
+
+\usepackage{pgfplots}
+
+% Extended Math Support from the Famous 'American Mathematical Society'
+\usepackage{amsmath}
+
+\usepackage[math]{blindtext}
+
+\usepackage{xcolor}
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue,
+            anchorcolor = blue]{hyperref} 
+
+\begin{document}
+
+Aaroh Gokhale, Phillip Wangnick
+\vskip 0.2cm
+14 May 2021
+
+\vskip 1cm
+
+\begin{center}
+
+\title[\textbf{Gauss Newton Algorithm}
+
+\end{center}
+
+\vskip 0.5cm
+
+In both Multivariable Calculus and Linear Algebra this year, we've found ways to find the line of best fit for a given data set using least squares. The least squares regression line, while a powerful tool, is not the most optimal tool for modelling data in real life. Many things are not correlated in a linear manner, and might be modelled better with higher order polynomials, exponentials, sinusoidal functions, or some other class of functions.
+
+\vskip 1cm
+
+The Gauss Newton Algorithm is a powerful iterative tool that allows us to get better and better approximations for nonlinear models of data. It modifies Newton's method for optimization in order to achieve this. It first appeared in a paper from Carl Friedrich Gauss called Theoria motus corporum coelestium in sectionibus conicis solem ambientum. 
+
+\vskip 1cm
+
+\begin{center}
+	 \textbf{Newton's Method}
+\end{center}
+
+We will first begin by setting up the prerequiste to the Gauss Newton Algorithm, which is Newton's method. 
+Netwon's method allows us to find the zeroes of a function using its derivatives. 
+
+\vskip 1cm
+
+The formula for the next closer approximation for the zero of function is a recursive formula as follows:
+\vskip 0.2cm
+For a given function $f:\mathbb{R} \rightarrow \mathbb{R}$, let $x_{n}$ be the sequence of numbers that gets closer to the value of the root of $f$. Then,
+$x_{n+1} = x_{n} - \frac{f(x_n)}{f'(x_n)}$. This result is obtained through right triangle trignometry by drawing the tangent line of $f$ at $x_n$; we won't go into the derivation in this paper.
+
+\vskip 1cm
+
+Let's take a look at an example of Newton's method, by trying to approximate the value of $\sqrt{2}$ using the quadratic function $g(x) = x^2 - 2$, the root of which is $\sqrt{2}$.
+
+\vskip 0.2cm
+Let's start with a guess for the zero of $x^2 - 2$. Since for $x = 1$, $g(x) = -1$, and for $x = 2$, $g(x) = 3$, $g$ has to cross the x axis between those two values, so let's pick $x_0 = 2$ for our initial guess. $g'(x) = 2x$
+
+\vskip 0.3cm
+
+Then:
+
+\vskip 0.1cm
+$x_1  = 2 - \frac{2}{4} = 1.5$
+\vskip .1cm
+$x_2 = 1.5 - \frac{0.25}{3} = 1.41\overline{6} \approx 1.417$
+\vskip .1cm 
+$x_3 = 1.417 - \frac{0.007889}{2.834} \approx 1.4142$
+
+\vskip .3 cm
+
+We were able to approximate $\sqrt{2}$ to 4 decimal places with just 3 iterations of Netwon's method.
+
+\vskip 2cm
+
+\begin{center} 
+\textbf{Extending Newton's Method for Optimization and for functions whose domain is not $\mathbb{R}^1$}
+\end{center}
+
+Since optimization is nothing but finding the zeroes of a the derivative of a function, Newton's method can be extended for optimization as well. 
+
+\vskip .1cm
+
+The general formula for the next closer approximation for a critical point of a given function $f$, is $x_{n+1} = x_n - \frac{f'(x_n)}{f''(x_n)}$. The function from the original formula is replaced by its derivative, and the derivative is replaced by the second derivative, leading to finding the zero of the derivative, rather than the original function itself. 
+
+\vskip 1cm
+
+Similarly, Newton's method for optimization can be extended to functions whose domain is all vectors in $\mathbb{R}^i$. This is done through replacing the derivative of $f$ with the gradient of $f$, which is a vector filled with the partial derivatives of $f$, defined as $\nabla f = \begin{pmatrix} \dfrac{\partial f}{\partial x_1} \\ \dfrac{\partial f}{\partial x_2} \\ \dfrac{\partial f}{\partial x_3} \\ \vdots \\ \dfrac{\partial f}{\partial x_i}\end{pmatrix}$, and replacing the second derivative with the Hessian, which a matrix filled with the second order partial derivatives of $f$, defined as $\mathbf {H} _{f}={\begin{pmatrix}{\dfrac {\partial ^{2}f}{\partial x_{1}^{2}}}&{\dfrac {\partial ^{2}f}{\partial x_{1}\,\partial x_{2}}}&\cdots &{\dfrac {\partial ^{2}f}{\partial x_{1}\,\partial x_{i}}}\\[2.2ex]{\dfrac {\partial ^{2}f}{\partial x_{2}\,\partial x_{1}}}&{\dfrac {\partial ^{2}f}{\partial x_{2}^{2}}}&\cdots &{\dfrac {\partial ^{2}f}{\partial x_{2}\,\partial x_{i}}}\\[2.2ex]\vdots &\vdots &\ddots &\vdots \\[2.2ex]{\dfrac {\partial ^{2}f}{\partial x_{i}\,\partial x_{1}}}&{\dfrac {\partial ^{2}f}{\partial x_{i}\,\partial x_{2}}}&\cdots &{\dfrac {\partial ^{2}f}{\partial x_{i}^{2}}}\end{pmatrix}}$. The problem is, matrix division is not defined, and thus division is replaced by multiplication by the inverse of the Hessian.
+
+\vskip .3cm
+
+Putting these together, we obtain $\mathbf{x}_{n+1} = \mathbf{x}_{n} - \mathbf{H}^{-1}\nabla{f}$, where $\mathbf{H}$ is the Hessian matrix of $f$ calculated at 
+$\mathbf{x}_{n}$, and $\nabla{f}$ is the gradient of $f$ calculated at $\mathbf{x}_n$.
+
+\vskip 2cm
+
+\begin{center}
+\textbf{Least Squares, Pseudoinverses, and the Gauss Newton Algorithm}
+\end{center}
+
+Armed with the tools we need, we can now move on to the problem of minimizing the sum of the squares of residuals for a given data set. 
+
+\vskip 0.5cm
+
+Let's say we want to model a data set $\{x_i, y_i\}$ using the function $f(x, \boldsymbol{\beta})$, where $f$ is a multivariable funciton of $x$, and the vector $\boldsymbol{\beta}$, which consists of the coefficients of the model. For example, in a quadratic model, $y = ax^2 + bx + c$, $\boldsymbol{\beta}$ will consist of $a$, $b$, and $c$. 
+
+\vskip .5cm
+
+Let's define $r_i$ to be the sequence of residuals. Meaning that $r_i = y_i - f(x_i, \boldsymbol{\beta})$.
+In least squares, our goal is to minimize $\sum{r_i^2}$.
+
+\vskip .5cm
+
+We can try using the formula we obtained earlier, $\mathbf{x}_{n+1} = \mathbf{x}_{n} - \mathbf{H}^{-1}\nabla{f}$. After plugging in $f$ and $\boldsymbol{\beta}$ in place of $f$ and $\mathbf{x}$, and after much simplification, we obtain the formula $\boldsymbol{\beta}_{n+1} = \boldsymbol{\beta}_{n} + 2\mathbf{H}^{-1}\mathbf{J}^\top\mathbf{r}$, where $\mathbf{J}$ is the Jacobian matrix of $f$ calculated at $(\mathbf{x}, \boldsymbol{\beta}_{n})$, defined as $\mathbf{J} = \begin{pmatrix}\dfrac{\partial f(x_1)}{\partial \beta_1} & \dfrac{\partial f(x_1)}{\partial \beta_2} & \cdots & \dfrac{\partial f(x_1)}{\partial \beta_j} \\ \dfrac{\partial f(x_2)}{\partial \beta_1} & \dfrac{\partial f(x_2)}{\partial \beta_2} & \cdots & \dfrac{\partial f(x_2)}{\partial \beta_j} \\ \vdots & \vdots & \ddots & \vdots \\ \dfrac{\partial f(x_i)}{\partial \beta_1} & \dfrac{\partial f(x_i)}{\partial \beta_2} & \cdots & \dfrac{\partial f(x_i)}{\partial \beta_j}\end{pmatrix}$, where $\boldsymbol{\beta}_n$ is the coefficient vector of size $j$, $\mathbf{x}$ is a vector of size $i$, consisting of all the $x$ data points, and $\mathbf{r}$ is the vector of all the residuals. The derivation of this simplification is outside the scope of this paper.
+
+\vskip .5cm
+
+Now that we have a formula, we have made some progress, but there still remains a problem: The Hessian matrix can be singular. A singular matrix doesn't has a determinant of $0$, meaning that it doesn't have an inverse, meaning that we can't always find the next $\boldsymbol{\beta}$.
+
+\vskip .3cm
+
+For this to work for any case, we need to define something called a pseudoinverse: an inverse that only estimates what an actual inverse would do. In order to this, we will drop a term from the Hessian. 
+
+\vskip .3cm
+
+The Hessian simplifies to ${\displaystyle \mathbf{H} = 2\sum _{i=1}^{m}\left({\frac {\partial r_{i}}{\partial \beta _{j}}}{\frac {\partial r_{i}}{\partial \beta _{k}}}+r_{i}{\frac {\partial ^{2}r_{i}}{\partial \beta _{j}\partial \beta _{k}}}\right).}$
+
+\vskip .2cm
+
+We can drop the term $\displaystyle r_{i}{\frac {\partial ^{2}r_{i}}{\partial \beta _{j}\partial \beta _{k}}.}$. Then after much simplifation, we obtain the formula  $\mathbf{H} \approx 2\mathbf{J}^\top\mathbf{J}$
+
+\vskip .3cm
+
+Finally, plugging in our estimate for the Hessian back in the formula, we get $\boldsymbol{\beta}_{n+1} = \boldsymbol{\beta}_{n} + 2(2\mathbf{J}^\top\mathbf{J})^{-1}\mathbf{J}^\top\mathbf{r} = \boldsymbol{\beta}_{n} + (\mathbf{J}^\top\mathbf{J})^{-1}\mathbf{J}^\top\mathbf{r}$
+
+\vskip .2cm
+
+So finally, we obtain the iterative formula, $\boldsymbol{\beta}_{n+1} = \boldsymbol{\beta}_{n} + (\mathbf{J}^\top\mathbf{J})^{-1}\mathbf{J}^\top\mathbf{r}$
+
+\vskip 0.4cm
+
+One important thing to note is that when computing the Jacobian Matrix, partial derivatives are taken with respect to $\beta_i$, and not with respect to $x$. This mistake is quite easy to make on your first time using the algorithm. For example, for $f(x, \boldsymbol{\beta}) = \beta_0 + \beta_{1}x + \beta_{2}x^2$, the partial derivatives in the Jacobian will be $\dfrac{\partial f}{\partial \beta_0} = 1$, $\dfrac{\partial f}{\partial \beta_0} = x$, and $\dfrac{\partial f}{\partial \beta_0} = x^2$, and nowhere are the $x$ terms modified. 
+ 
+\pagebreak
+\begin{center}
+\textbf{Example}
+\end{center}
+
+Let's take a look at an example of the Guass Newton Algorithm in action
+
+\vskip 0.2cm
+
+For the purpose of this example, I wrote a python class for computing these approximations that takes in our initial guess and our desired polynomial model. The class includes a Jacobian matrix calculating function, which is quite simple to implement, since all polynomial models have Jacobian matrices of the form $\begin{pmatrix}1 & x_1 & x_1^2 & \cdots & x_1^n \\ 1 & x_2 & x_2^2 & \cdots & x_2^n  \\ 1 & x_3 & x_3^2 & \cdots & x_3^n \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 1 & x_i & x_i^2 & \cdots & x_i^n \end{pmatrix}$, unless any of the components of $\boldsymbol{\beta}$ are $0$, in which case, the column corresponding to that component is also filled with $0$s. Another function the class includes is a function that calculates the residual vector, and finally, a third function that executes one iteration of the algorithm, taking in the initial guess as a parameter. All Matrix operations in the algorithm are handled by Python's Numpy library by defining matrices as Numpy arrays. 
+\vskip 0.3 cm
+
+Let's take a look at the following data set:
+
+\begin{tabular}{c|c}
+$x$ & $y$ \\ \hline
+$0$ & $7$ \\
+$1$ & $15$ \\
+$2$ & $43$ \\
+$3$ & $107$ \\
+$4$ & $233$ \\
+$5$ & $439$ \\
+$6$ & $733$ \\
+$7$ & $1160$ \\
+$8$ & $1686$ \\
+$9$ & $2370$ \\
+$10$ & $3220$ \\
+\end{tabular}
+
+\vskip 0.2cm
+
+Graph:
+
+\begin{tikzpicture}
+\begin{axis}[
+title=Data Set,
+xlabel = {$x$},
+ylabel = {$y$},
+]
+\addplot[only marks]table {data.txt};
+\end{axis}
+\end{tikzpicture}
+
+\vskip 0.2cm
+
+Our goal is to model this data set using a cubic model, $y = \beta_0 + \beta_{1}x + \beta_{2}x^2 + \beta_{3}x^3$
+
+Let's start with an intial guess of $\boldsymbol{\beta} = \begin{pmatrix} 1 \\ 1  \\ 1 \\ 1\end{pmatrix}$
+
+Graph:
+
+\begin{tikzpicture}
+\begin{axis}[
+title=Data Set,
+xlabel = {$x$},
+ylabel = {$y$},
+]
+\addplot[only marks]table {data.txt};
+\addplot[red] expression[domain = 0:10,samples=100]{x^3 + x^2 + x + 1};
+
+\end{axis}
+\end{tikzpicture}
+
+\vskip 0.2cm
+
+Now let's run $\boldsymbol{\beta}$ through five iterations of the Gauss Newton Algorithm, and see the result:
+
+Iteration 1: $\boldsymbol{\beta} = \begin{pmatrix} 9.74825175\\  -4.01515152 \\ 3.56934732\\ 2.89335664 \end{pmatrix}$ 
+\vskip 0.2cm
+Iteration 2: $\boldsymbol{\beta} = \begin{pmatrix} 9.74825175\\  -4.01515152 \\ 3.56934732\\ 2.89335664 \end{pmatrix}$ 
+\vskip 1cm
+
+On the second iteration of the algorithm, $\boldsymbol{\beta}$ didn't change at all, and it didn't change after 5 iterations, or 10 iterations, meaning that the changes are so precise that they are outside of Python's float precision.
+
+\vskip 1cm
+
+Graph:
+
+\vskip 0.2cm
+
+\begin{tikzpicture}
+\begin{axis}[
+title=Data Set,
+xlabel = {$x$},
+ylabel = {$y$},
+]
+\addplot[only marks]table {data.txt};
+\addplot[red] expression[domain = 0:10,samples=100]{x^3 + x^2 + x + 1};
+\addplot[blue] expression[domain = 0:10,samples=100]{2.89335664*x^3 + 3.56934732*x^2 - 4.01515152*x + 9.74825175};
+
+\end{axis}
+\end{tikzpicture}
+
+\vskip 0.2cm
+
+The blue curve corresponds to the graph after the first iteration of the Gauss Newton Algorithm, and the red curve corresponds to the initial guess.
+
+\vskip 0.2cm
+
+Only one iteration of the Gauss Newton Algorithm was required to achieve the potential of the algorithm for this data set for this model.
+
+\vskip 1cm
+
+\begin{center}
+\textbf{Covergence Properties}
+\end{center}
+
+The Gauss Newton algorithm converges very rapidly in many cases, where only one iteration is needed to achieve its potential, and converges slowly in other cases. In some cases the algorithm may even completely diverge.
+
+\vskip 0.2cm
+
+Since we use a pseudoinverse in this algorithm, we are approximating a matrix, and hence we must pay attention to condition numbers. If the Hessian matrix is ill-conditioned, meaning that it has a high condition number and is susceptible to large errors from small approximations, the algorithm may diverge. 
+
+\vskip 0.2cm
+
+Let's take a look at an example where the algorithm diverges, and let's analyze the reasons for divergence. 
+
+\vskip 0.2cm
+
+We can look at the Google Trends data for the term ``Coronavirus" from 2016. The dataset contains 260 elements, each corresponding to the relative popularity of the term ``Coronavirus" in a given time interval. Let's run the data through my Gauss Netwon class in Python, and see what happens.
+
+\vskip 0.2cm
+
+Every iteration of the algorithm made the last component of the coefficient vector increase by $1$, until it became a $2$ digit number, after which each iteration increased it by $10$, until it reached $3$ digits, after which it increased it by $100$ every iteration, and so on. Even after 1000 iterations of the algorithm, the coefficient vector did not seem to converge to a finite number. Let's explore a reason why this might be the case. 
+
+\vskip 0.2cm
+
+For a given matrix $A$, its condition number $C$ decides how much approximating $A$ will affect $A\mathbf{x} = \mathbf{b}$. The larger $C$ is, the greater impact approximation will have on $\mathbf{b}$. 
+
+\vskip 0.2cm 
+
+In the Gauss-Newton Algorithm, we approximate the Hessian matrix in order to avoid instances of the Hessian being singular. Therefore, it is important to look at the condition number of the Hessian matrix. The norm of the Hessian is  $||\mathbf{H}|| = \sqrt{\lambda_\text{max}(\mathbf{H}^\top\mathbf{H})}$, and the norm of the inverse of the Hessian is $||\mathbf{H}^{-1}|| = \sqrt{\lambda_\text{max}((\mathbf{H}^{-1})^\top\mathbf{H}^{-1})}$, which is nothing but $\sqrt{\dfrac{1}{\lambda_\text{min}(\mathbf{H}^\top\mathbf{H})}}$, thus giving us the condition number of $C = \sqrt{\lambda_\text{max}(\mathbf{H}^\top\mathbf{H})}  \sqrt{\dfrac{1}{\lambda_\text{min}(\mathbf{H}^\top\mathbf{H})}} = \sqrt{\dfrac{\lambda_\text{max}(\mathbf{H}^\top\mathbf{H})}{\lambda_\text{min}(\mathbf{H}^\top\mathbf{H})}}$. 
+From this, we can conclude that if the largest eigenvalue of $\mathbf{H}^\top\mathbf{H}$ to too much larger than the its smallest eigenvalue, the condition number will be high, and the algorithm may diverge. Since eigenvalues are just roots of the characteristic polynomial, we can analyze the characterisictic polynomail for a given Hessian, and note how dense the roots are. The denser the roots, the less harm will be caused by approximating the Hessian. The calculation of eigenvalues is an extremely time-consuming process, and not practical for data sets of size $260$. However, if one of the eigenvalues is negative, which is the reason why we would approximate the hessian in the first place, we won't be able to calculate the condition number. 
+
+\vskip 0.2cm Note: The above part of the paper is an original result that has not been peer reviewed, and is therefore subject to error. 
+
+\vskip 1cm
+
+\begin{center}
+
+\textbf{Applications}
+
+\end{center}
+
+The Gauss Newton Algorithm is extremely powerful due to the fact that it can use any real to real model to make an approximation. 
+Some of the areas that the algorithm is used include: \begin{itemize} \item Statistics \item Physics \item Economics \item Computer Science\end{itemize} and any area that needs to model a nonlinear relationship bewteen two variables. As we saw in the paper, the algorithm uses concepts learned from Linear Algebra this year, including: \begin{itemize} \item transposes  \item inverses  \item multiplication  \item norms and condition numbers \end{itemize} Not only that, but the algorithm also uses concepts learned from Multivariable calculus, including: \begin{itemize} \item partial derivatives \item Jacobians \item gradients \item vector valued and multivariate functions \end{itemize} Some potential weaknesses of the algorithm include: \begin{itemize} \item divergence when Hessian is ill-conditioned \item divergence when initial guess is too far off from points \item not the best approximation when the inverse of the Hessian exists \end{itemize}
+
+\pagebreak
+
+\begin{center}
+\textbf{Works Cited}
+\end{center}
+
+\url{https://www.statisticshowto.com/gauss-newton-method/} 
+\vskip 0.2cm
+\url{http://fourier.eng.hmc.edu/e176/lectures/NM/node36.html}
+\vskip 0.2cm
+\url{https://see.stanford.edu/materials/lsoeldsee263/07-ls-reg.pdf}
+\vskip 0.2cm
+\url{http://www.math.umd.edu/~petersd/460/html/nonlinls.html}
+\vskip 0.2cm
+\url{https://www.sciencedirect.com/topics/mathematics/gauss-newton-method}
+\vskip 0.2cm
+\url{https://www.youtube.com/watch?v=Kln0ZQ7sX8k}
+\vskip 0.2cm
+\url{https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm}
+\end{document}
